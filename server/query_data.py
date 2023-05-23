@@ -36,7 +36,7 @@ class LLMLoader:
             callbacks.append(stream_handler)
 
         if self.llm is None:
-            if self.llm_model_type in ["gpt4all-j", "gpt4all-mpt"]:
+            if self.llm_model_type.startswith("gpt4all"):
                 MODEL_PATH = (
                     os.environ.get("GPT4ALL_J_MODEL_PATH")
                     if self.llm_model_type == "gpt4all-j"
