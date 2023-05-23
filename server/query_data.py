@@ -10,11 +10,16 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms import GPT4All, HuggingFacePipeline, LlamaCpp
 from langchain.vectorstores import VectorStore
 from langchain.vectorstores.base import VectorStore
-from transformers import (AutoModelForCausalLM, AutoTokenizer,
-                          StoppingCriteria, StoppingCriteriaList, pipeline)
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    StoppingCriteria,
+    StoppingCriteriaList,
+    pipeline,
+)
 
 
-class llm_loader:
+class LLMLoader:
     llm_model_type: str
     vectorstore: VectorStore
     llm: any

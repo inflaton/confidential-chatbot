@@ -16,7 +16,7 @@ from langchain.llms import GPT4All
 from langchain.vectorstores import VectorStore
 from langchain.vectorstores.chroma import Chroma
 
-from query_data import llm_loader
+from query_data import LLMLoader
 from schemas import ChatResponse
 
 # setting device on GPU if available, else CPU
@@ -37,7 +37,7 @@ load_dotenv(override=True)
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
 use_streaming = llm_model_type == "openai"
-history_enabled = True #llm_model_type != "gpt4all-j"
+history_enabled = True  # llm_model_type != "gpt4all-j"
 
 app = FastAPI()
 origins = ["*"]
@@ -55,12 +55,13 @@ if not Path(index_path).exists():
 embeddings = HuggingFaceInstructEmbeddings(
     model_name="hkunlp/instructor-xl", model_kwargs={"device": device.type}
 )
+print("DONE")
 
 print("loading vectorstore")
 vectorstore = Chroma(embedding_function=embeddings, persist_directory=index_path)
 print("DONE")
 
-llm_loader = llm_loader(vectorstore, llm_model_type)
+llm_loader = LLMLoader(vectorstore, llm_model_type)
 
 
 @app.on_event("startup")

@@ -82,4 +82,4 @@ The test cannot complete with the following models:
 - GPT4LL-J: dnato/ggml-gpt4all-j-v1.3-groovy.bin - model crashes when answering the second question due to out of memory (CPU)
 - WizardLM: TheBloke/wizardLM-7B-HF - model crashes when answering the first question due to out of memory (GPU)
 
-Please find the detailed comparison of other 4 models (based on log files at data/pci_dss_v4_logs/) at [this blog post](https://confluence.foundry.mastercard.com/x/QYskCQ).
+Please find the detailed comparison of other 4 models (based on log files at data/pci_dss_v4_logs/) at [this blog post](#).

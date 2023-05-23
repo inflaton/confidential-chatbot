@@ -12,7 +12,7 @@ from langchain.llms import GPT4All
 from langchain.schema import LLMResult
 from langchain.vectorstores.chroma import Chroma
 
-from query_data import llm_loader
+from query_data import LLMLoader
 
 # setting device on GPU if available, else CPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -104,7 +104,7 @@ end = timer()
 print(f"Completed in {end - start:.3f}s")
 
 start = timer()
-llm_loader = llm_loader(vectorstore, llm_model_type)
+llm_loader = LLMLoader(vectorstore, llm_model_type)
 custom_handler = MyCustomHandler()
 qa = llm_loader.get_chain(custom_handler)
 end = timer()
@@ -118,7 +118,7 @@ queue = [
     "Can you summarize the changes made from PCI DSS version 3.2.1 to version 4.0?",
     "tell me more on data loss prevention",
     "more on protecting cardholder data with strong cryptography during transmission over open, public networks",
-    "exit"
+    "exit",
 ]
 while True:
     if chatting:
