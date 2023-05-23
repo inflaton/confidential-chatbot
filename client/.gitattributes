@@ -1,0 +1,4 @@
+data/hnswlib/args.json filter=lfs diff=lfs merge=lfs -text
+data/hnswlib/docstore.json filter=lfs diff=lfs merge=lfs -text
+data/hnswlib/hnswlib.index filter=lfs diff=lfs merge=lfs -text
+data/hnswlib filter=lfs diff=lfs merge=lfs -text

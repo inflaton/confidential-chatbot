@@ -1,0 +1,27 @@
+fastapi
+black
+isort
+websockets
+pydantic
+langchain
+uvicorn
+bs4
+unstructured
+libmagic
+chromadb 
+sentence_transformers 
+InstructorEmbedding
+python-dotenv
+touch
+pyllama 
+llama-cpp-python
+pyllamacpp
+pygpt4all
+tiktoken
+accelerate
+safetensors
+torch
+# xformers
+bitsandbytes
+einops
+pypdf
