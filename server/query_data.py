@@ -35,7 +35,7 @@ class llm_loader:
                 MODEL_PATH = os.environ.get("GPT4ALL_J_MODEL_PATH")
                 self.llm = GPT4All(
                     model=MODEL_PATH,
-                    n_ctx=2048,
+                    n_ctx=2048 * 2,
                     backend="gptj",
                     callbacks=callbacks,
                     verbose=True,

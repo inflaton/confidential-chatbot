@@ -37,7 +37,7 @@ load_dotenv(override=True)
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
 use_streaming = llm_model_type == "openai"
-history_enabled = llm_model_type != "gpt4all-j"
+history_enabled = True #llm_model_type != "gpt4all-j"
 
 app = FastAPI()
 origins = ["*"]

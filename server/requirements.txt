@@ -16,6 +16,7 @@ touch
 pyllama 
 llama-cpp-python
 pyllamacpp
+gpt4all
 pygpt4all
 tiktoken
 accelerate

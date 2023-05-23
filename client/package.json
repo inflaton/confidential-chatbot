@@ -2,8 +2,8 @@
   "name": "confidential-chatbot",
   "version": "0.1.0",
   "private": true,
-  "license": "UNLICENSED",
-  "author": "Donghao Huang",
+  "license": "MIT",
+  "author": "Inflaton",
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -23,7 +23,6 @@
     "langchain": "^0.0.66",
     "lucide-react": "^0.125.0",
     "next": "13.2.3",
-    "pdf-parse": "1.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-markdown": "^8.0.5",

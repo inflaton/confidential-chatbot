@@ -5,7 +5,6 @@ import { Message } from '@/types/chat';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
-import useWebSocket from 'react-use-websocket';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
 import {
@@ -32,7 +31,9 @@ export default function Home() {
   }>({
     messages: [
       {
-        message: process.env.NEXT_PUBLIC_HELLO || 'Hi, what would you like to experience?',
+        message:
+          process.env.NEXT_PUBLIC_HELLO ||
+          'Hi, what would you like to experience?',
         type: 'apiMessage',
       },
     ],
@@ -91,29 +92,50 @@ export default function Home() {
         }));
         setLoading(false);
       }
-
     } catch (error) {
       console.log('handleData error:', error);
     }
   }
 
+  function connectWebSocket() {
+    if (webSocket.current) {
+      return;
+    }
+    const ws = new WebSocket(chatApiUrl);
+    webSocket.current = ws;
+
+    ws.onopen = function () {
+      console.log('socket.onopen');
+      setIsReady(true);
+    };
+
+    ws.onmessage = function (e) {
+      console.log('Message:', e.data);
+      handleData(e.data);
+    };
+
+    ws.onclose = function (e) {
+      webSocket.current = null;
+      setIsReady(false);
+
+      console.log(
+        'Socket is closed. Reconnect will be attempted in 1 second.',
+        e.reason,
+      );
+      setTimeout(function () {
+        connectWebSocket();
+      }, 1000);
+    };
+
+    ws.onerror = function (err) {
+      console.error('Socket encountered error: ', err);
+      ws.close();
+    };
+  }
+
   useEffect(() => {
     if (toUseWebSocket && !webSocket.current) {
-      const socket = new WebSocket(chatApiUrl);
-
-      socket.onopen = () => {
-        console.log('socket.onopen'); setIsReady(true);
-      }
-      socket.onclose = () => {
-        console.log('socket.onclose'); setIsReady(false);
-      }
-      socket.onmessage = (event) => handleData(event.data);
-
-      webSocket.current = socket;
-
-      return () => {
-        // socket.close();
-      };
+      connectWebSocket();
     }
   });
 
@@ -155,28 +177,27 @@ export default function Home() {
           webSocket.current.send(JSON.stringify(msg));
         }
       } else {
-        await fetchEventSource(chatApiUrl || '/api/chat',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              question,
-              history,
-            }),
-            signal: ctrl.signal,
-            onmessage(event) {
-              handleData(event.data);
-            },
-            onclose() {
-              console.log("Connection closed by the server");
-              ctrl.abort();
-            },
-            onerror(err) {
-              console.log("There was an error from server", err);
-            },
-          });
+        await fetchEventSource(chatApiUrl || '/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            question,
+            history,
+          }),
+          signal: ctrl.signal,
+          onmessage(event) {
+            handleData(event.data);
+          },
+          onclose() {
+            console.log('Connection closed by the server');
+            ctrl.abort();
+          },
+          onerror(err) {
+            console.log('There was an error from server', err);
+          },
+        });
       }
     } catch (error) {
       setLoading(false);
@@ -185,10 +206,7 @@ export default function Home() {
     }
   }
 
-  const onSubmit = useCallback(
-    handleSubmit,
-    [query],
-  );
+  const onSubmit = useCallback(handleSubmit, [query]);
 
   //prevent empty submissions
   const handleEnter = useCallback(
@@ -207,12 +225,12 @@ export default function Home() {
       ...messages,
       ...(pending
         ? [
-          {
-            type: 'apiMessage',
-            message: pending,
-            sourceDocs: pendingSourceDocs,
-          },
-        ]
+            {
+              type: 'apiMessage',
+              message: pending,
+              sourceDocs: pendingSourceDocs,
+            },
+          ]
         : []),
     ];
   }, [messages, pending, pendingSourceDocs]);
@@ -292,20 +310,37 @@ export default function Home() {
                               <div key={`messageSourceDocs-${index}`}>
                                 <AccordionItem value={`item-${index}`}>
                                   <AccordionTrigger>
-                                    <h3>{process.env.NEXT_PUBLIC_SOURCE || 'Source'} {index + 1}</h3>
+                                    <h3>
+                                      {process.env.NEXT_PUBLIC_SOURCE ||
+                                        'Source'}{' '}
+                                      {index + 1}
+                                    </h3>
                                   </AccordionTrigger>
                                   <AccordionContent>
                                     <ReactMarkdown linkTarget="_blank">
                                       {doc.pageContent || doc.page_content}
                                     </ReactMarkdown>
                                     <p className="mt-2">
-                                      <b>{process.env.NEXT_PUBLIC_URL || 'URL'}:</b> <a target="_blank" href={doc.metadata.url}>{doc.metadata.url}</a>
+                                      <b>
+                                        {process.env.NEXT_PUBLIC_URL || 'URL'}:
+                                      </b>{' '}
+                                      <a
+                                        target="_blank"
+                                        href={doc.metadata.url}
+                                      >
+                                        {doc.metadata.url}
+                                      </a>
                                     </p>
-                                    {doc.metadata.page !== undefined &&
+                                    {doc.metadata.page !== undefined && (
                                       <p className="mt-2">
-                                        <b>{process.env.NEXT_PUBLIC_PAGE || 'Page'}:</b> {doc.metadata.page + 1}
+                                        <b>
+                                          {process.env.NEXT_PUBLIC_PAGE ||
+                                            'Page'}
+                                          :
+                                        </b>{' '}
+                                        {doc.metadata.page + 1}
                                       </p>
-                                    }
+                                    )}
                                   </AccordionContent>
                                 </AccordionItem>
                               </div>
@@ -323,7 +358,10 @@ export default function Home() {
                         <div key={`SourceDocs-${index}`}>
                           <AccordionItem value={`item-${index}`}>
                             <AccordionTrigger>
-                              <h3>{process.env.NEXT_PUBLIC_SOURCE || 'Source'} {index + 1}</h3>
+                              <h3>
+                                {process.env.NEXT_PUBLIC_SOURCE || 'Source'}{' '}
+                                {index + 1}
+                              </h3>
                             </AccordionTrigger>
                             <AccordionContent>
                               <ReactMarkdown linkTarget="_blank">
@@ -352,8 +390,10 @@ export default function Home() {
                     name="userInput"
                     placeholder={
                       loading
-                        ? process.env.NEXT_PUBLIC_WAITING || 'Waiting for response...'
-                        : process.env.NEXT_PUBLIC_QUESTION || 'What is your question?'
+                        ? process.env.NEXT_PUBLIC_WAITING ||
+                          'Waiting for response...'
+                        : process.env.NEXT_PUBLIC_QUESTION ||
+                          'What is your question?'
                     }
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -390,7 +430,12 @@ export default function Home() {
           </main>
         </div>
         <footer className="m-auto p-4">
-          <a href={process.env.NEXT_PUBLIC_FOOTER_LINK || "https://js.langchain.com"} target='_blank'>
+          <a
+            href={
+              process.env.NEXT_PUBLIC_FOOTER_LINK || 'https://js.langchain.com'
+            }
+            target="_blank"
+          >
             {process.env.NEXT_PUBLIC_FOOTER1 || 'Powered by LangChain.js.'}
             <br />
             {process.env.NEXT_PUBLIC_FOOTER2 || ''}
