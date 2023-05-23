@@ -36,19 +36,27 @@ class LLMLoader:
             callbacks.append(stream_handler)
 
         if self.llm is None:
-            if self.llm_model_type == "gpt4all-j":
-                MODEL_PATH = os.environ.get("GPT4ALL_J_MODEL_PATH")
+            if self.llm_model_type in ["gpt4all-j", "gpt4all-mpt"]:
+                MODEL_PATH = (
+                    os.environ.get("GPT4ALL_J_MODEL_PATH")
+                    if self.llm_model_type == "gpt4all-j"
+                    else os.environ.get("GPT4ALL_MPT_MODEL_PATH")
+                )
                 self.llm = GPT4All(
                     model=MODEL_PATH,
-                    n_ctx=2048 * 2,
-                    backend="gptj",
+                    n_ctx=2048,
+                    backend="gptj" if self.llm_model_type == "gpt4all-j" else "llama",
                     callbacks=callbacks,
                     verbose=True,
                 )
             elif self.llm_model_type == "llamacpp":
                 MODEL_PATH = os.environ.get("LLAMACPP_MODEL_PATH")
                 self.llm = LlamaCpp(
-                    model_path=MODEL_PATH, n_ctx=2048, callbacks=callbacks, verbose=True
+                    model_path=MODEL_PATH,
+                    n_ctx=2048,
+                    callbacks=callbacks,
+                    verbose=True,
+                    use_mlock=True,
                 )
             elif self.llm_model_type == "huggingface":
                 MODEL_ID = os.environ.get("HUGGINGFACE_MODEL_ID")
