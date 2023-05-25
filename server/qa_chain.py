@@ -165,9 +165,13 @@ class QAChain:
 
         qa = self.get_chain(tracing)
 
-        result = qa(
-            inputs,
-            callbacks=[streaming_handler],
+        result = (
+            qa(
+                inputs,
+                callbacks=[streaming_handler],
+            )
+            if streaming_handler is not None
+            else qa(inputs)
         )
 
         return result

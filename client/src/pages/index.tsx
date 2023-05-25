@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { finished } from 'stream';
 
 const chatApiUrl = process.env.NEXT_PUBLIC_DOCS_CHAT_API_URL || '';
 const toUseWebSocket = chatApiUrl.startsWith('ws');
@@ -79,19 +80,24 @@ export default function Home() {
           ...state,
           pending: (state.pending ?? '') + parsedData.token,
         }));
-      } else {
-        if (parsedData.sourceDocs) {
-          setMessageState((state) => ({
-            ...state,
-            pendingSourceDocs: parsedData.sourceDocs,
-          }));
-        } else {
-          setMessageState((state) => ({
-            ...state,
-            pending: (state.pending ?? '') + parsedData.error,
-          }));
-        }
+      }
 
+      let finished = false;
+      if (parsedData.sourceDocs) {
+        finished = true;
+        setMessageState((state) => ({
+          ...state,
+          pendingSourceDocs: parsedData.sourceDocs,
+        }));
+      } else if (parsedData.error) {
+        finished = true;
+        setMessageState((state) => ({
+          ...state,
+          pending: (state.pending ?? '') + parsedData.error,
+        }));
+      }
+
+      if (finished) {
         setMessageState((state) => ({
           history: [
             ...state.history,
@@ -245,12 +251,12 @@ export default function Home() {
       ...messages,
       ...(pending
         ? [
-            {
-              type: 'apiMessage',
-              message: pending,
-              sourceDocs: pendingSourceDocs,
-            },
-          ]
+          {
+            type: 'apiMessage',
+            message: pending,
+            sourceDocs: pendingSourceDocs,
+          },
+        ]
         : []),
     ];
   }, [messages, pending, pendingSourceDocs]);
@@ -411,9 +417,9 @@ export default function Home() {
                     placeholder={
                       loading
                         ? process.env.NEXT_PUBLIC_WAITING ||
-                          'Waiting for response...'
+                        'Waiting for response...'
                         : process.env.NEXT_PUBLIC_QUESTION ||
-                          'What is your question?'
+                        'What is your question?'
                     }
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}

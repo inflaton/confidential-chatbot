@@ -39,7 +39,7 @@ load_dotenv(override=True)
 device_type = os.environ.get("HF_EMBEDDINGS_DEVICE_TYPE") or device.type
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
-
+streaming_enabled = llm_model_type in ["openai", "llamacpp"]
 
 start = timer()
 embeddings = HuggingFaceInstructEmbeddings(
@@ -72,7 +72,7 @@ print(f"Completed in {end - start:.3f}s")
 @serving(websocket=True)
 def chat(question: str, history: Optional[List], **kwargs) -> str:
     # Get the `streaming_handler` from `kwargs`. This is used to stream data to the client.
-    streaming_handler = kwargs.get("streaming_handler")
+    streaming_handler = kwargs.get("streaming_handler") if streaming_enabled else None
     chat_history = []
     for element in history:
         item = (element[0] or "", element[1] or "")
@@ -86,4 +86,8 @@ def chat(question: str, history: Optional[List], **kwargs) -> str:
     print(f"Completed in {end - start:.3f}s")
 
     resp = ChatResponse(sourceDocs=result["source_documents"])
+
+    if not streaming_enabled:
+        resp.token = result["answer"]
+
     return json.dumps(resp.dict())
