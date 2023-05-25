@@ -36,13 +36,14 @@ if device.type == "cuda":
 # Constants
 load_dotenv(override=True)
 
+device_type = os.environ.get("HF_EMBEDDINGS_DEVICE_TYPE") or device.type
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
 
 
 start = timer()
 embeddings = HuggingFaceInstructEmbeddings(
-    model_name="hkunlp/instructor-xl", model_kwargs={"device": device.type}
+    model_name="hkunlp/instructor-xl", model_kwargs={"device": device_type}
 )
 end = timer()
 

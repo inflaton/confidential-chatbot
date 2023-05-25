@@ -33,7 +33,7 @@ if device.type == "cuda":
 # Constants
 load_dotenv(override=True)
 
-device_type = os.environ.get("CUDA_DEVICE_TYPE") or device.type
+device_type = os.environ.get("HF_EMBEDDINGS_DEVICE_TYPE") or device.type
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
 history_enabled = llm_model_type != "gpt4all-j"
@@ -156,8 +156,9 @@ while True:
         start = timer()
         docs = qa.retriever.get_relevant_documents(standalone_question)
         end = timer()
-        print(f"Completed in {end - start:.3f}s")
+        
         print(docs)
+        print(f"Completed in {end - start:.3f}s")
 
     if history_enabled:
         chat_history.append((query, result["answer"]))
