@@ -33,6 +33,7 @@ if device.type == "cuda":
 # Constants
 load_dotenv(override=True)
 
+device_type = os.environ.get("CUDA_DEVICE_TYPE") or device.type
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
 history_enabled = llm_model_type != "gpt4all-j"
@@ -88,7 +89,7 @@ class MyCustomHandler(BaseCallbackHandler):
 
 start = timer()
 embeddings = HuggingFaceInstructEmbeddings(
-    model_name="hkunlp/instructor-xl", model_kwargs={"device": device.type}
+    model_name="hkunlp/instructor-xl", model_kwargs={"device": device_type}
 )
 end = timer()
 
