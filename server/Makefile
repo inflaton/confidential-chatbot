@@ -1,6 +1,5 @@
 .PHONY: start
 start:
-	# uvicorn main:app --reload --port 9000
 	python -m lcserve deploy local main.py
 
 test:
@@ -13,8 +12,8 @@ ingest:
 	python ingest.py
 
 mlock:
-	sudo prlimit --memlock=15413752832:15413752832 --pid $$$$
-	prlimit
+	@echo "To set mlock, please run: sudo prlimit --memlock=15413752832:15413752832 --pid $$$$"
+	prlimit --memlock
 
 .PHONY: format
 format:

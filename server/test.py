@@ -36,7 +36,6 @@ load_dotenv(override=True)
 device_type = os.environ.get("HF_EMBEDDINGS_DEVICE_TYPE") or device.type
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
-history_enabled = llm_model_type != "gpt4all-j"
 chatting = len(sys.argv) > 1 and sys.argv[1] == "chat"
 ## utility functions
 
@@ -160,5 +159,4 @@ while True:
         print(docs)
         print(f"Completed in {end - start:.3f}s")
 
-    if history_enabled:
-        chat_history.append((query, result["answer"]))
+    chat_history.append((query, result["answer"]))
