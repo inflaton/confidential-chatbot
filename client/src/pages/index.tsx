@@ -26,6 +26,7 @@ export default function Home() {
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
+    lastQuestion?: string;
     history: [string, string][];
     pendingSourceDocs?: Document[];
   }>({
@@ -56,8 +57,23 @@ export default function Home() {
 
   async function handleData(data: any) {
     try {
-      console.log(data);
-      const parsedData = JSON.parse(data);
+      let parsedData = JSON.parse(data);
+      const result = parsedData.result;
+      if (result !== undefined) {
+        if (result.length == 0 || (result.length > 20 && result[0] !== '{')) {
+          return;
+        }
+        parsedData.token = result;
+
+        try {
+          if (result.length > 2 && result[0] == '{') {
+            parsedData = JSON.parse(result);
+          }
+        } catch (error) {
+          // ignore
+        }
+      }
+
       if (parsedData.token) {
         setMessageState((state) => ({
           ...state,
@@ -76,9 +92,11 @@ export default function Home() {
           }));
         }
 
-        const question = query.trim();
         setMessageState((state) => ({
-          history: [...state.history, [question, state.pending ?? '']],
+          history: [
+            ...state.history,
+            [state.lastQuestion!, state.pending ?? ''],
+          ],
           messages: [
             ...state.messages,
             {
@@ -89,6 +107,7 @@ export default function Home() {
           ],
           pending: undefined,
           pendingSourceDocs: undefined,
+          lastQuestion: undefined,
         }));
         setLoading(false);
       }
@@ -162,6 +181,7 @@ export default function Home() {
         },
       ],
       pending: undefined,
+      lastQuestion: question,
     }));
 
     setLoading(true);
@@ -173,7 +193,7 @@ export default function Home() {
     try {
       if (toUseWebSocket) {
         if (webSocket.current && ready) {
-          const msg = { question };
+          const msg = { question, history };
           webSocket.current.send(JSON.stringify(msg));
         }
       } else {

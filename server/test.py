@@ -1,7 +1,8 @@
 import os
+import sys
 from timeit import default_timer as timer
 from typing import List
-import sys
+
 import torch
 from dotenv import load_dotenv
 from langchain.callbacks.base import BaseCallbackHandler
@@ -12,7 +13,7 @@ from langchain.llms import GPT4All
 from langchain.schema import LLMResult
 from langchain.vectorstores.chroma import Chroma
 
-from query_data import LLMLoader
+from qa_chain import QAChain
 
 # setting device on GPU if available, else CPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -104,9 +105,10 @@ end = timer()
 print(f"Completed in {end - start:.3f}s")
 
 start = timer()
-llm_loader = LLMLoader(vectorstore, llm_model_type)
+qa_chain = QAChain(vectorstore, llm_model_type)
 custom_handler = MyCustomHandler()
-qa = llm_loader.get_chain(custom_handler)
+qa_chain.init(custom_handler)
+qa = qa_chain.get_chain()
 end = timer()
 print(f"Completed in {end - start:.3f}s")
 

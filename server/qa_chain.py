@@ -3,6 +3,7 @@ import os
 from typing import Optional
 
 import torch
+from langchain.callbacks.base import BaseCallbackHandler
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.callbacks.tracers import LangChainTracer
 from langchain.chains import ConversationalRetrievalChain
@@ -10,16 +11,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms import GPT4All, HuggingFacePipeline, LlamaCpp
 from langchain.vectorstores import VectorStore
 from langchain.vectorstores.base import VectorStore
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    StoppingCriteria,
-    StoppingCriteriaList,
-    pipeline,
-)
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          StoppingCriteria, StoppingCriteriaList, pipeline)
 
 
-class LLMLoader:
+class QAChain:
     llm_model_type: str
     vectorstore: VectorStore
     llm: any
@@ -29,14 +25,22 @@ class LLMLoader:
         self.llm_model_type = llm_model_type
         self.llm = None
 
-    def init(self, stream_handler):
+    def init(self, custom_handler: Optional[BaseCallbackHandler] = None):
         print("initializing LLM: " + self.llm_model_type)
         callbacks = [StreamingStdOutCallbackHandler()]
-        if stream_handler is not None:
-            callbacks.append(stream_handler)
+        if custom_handler is not None:
+            callbacks.append(custom_handler)
 
         if self.llm is None:
-            if self.llm_model_type.startswith("gpt4all"):
+            if self.llm_model_type == "openai":
+                self.llm = ChatOpenAI(
+                    model_name="gpt-4",
+                    streaming=True,
+                    callbacks=callbacks,
+                    verbose=True,
+                    temperature=0,
+                )
+            elif self.llm_model_type.startswith("gpt4all"):
                 MODEL_PATH = (
                     os.environ.get("GPT4ALL_J_MODEL_PATH")
                     if self.llm_model_type == "gpt4all-j"
@@ -139,30 +143,13 @@ class LLMLoader:
 
         print("initialization complete")
 
-    def get_chain(
-        self, stream_handler, tracing: bool = False
-    ) -> ConversationalRetrievalChain:
-        """Create a ChatVectorDBChain for question/answering."""
-        # Construct a ChatVectorDBChain with a streaming llm for combine docs
-        # and a separate, non-streaming llm for question generation
+    def get_chain(self, tracing: bool = False) -> ConversationalRetrievalChain:
         if tracing:
             tracer = LangChainTracer()
             tracer.load_default_session()
 
-        if self.llm_model_type == "openai":
-            callbacks = [StreamingStdOutCallbackHandler()]
-            if stream_handler is not None:
-                callbacks.append(stream_handler)
-
-            self.llm = ChatOpenAI(
-                model_name="gpt-4",
-                streaming=True,
-                callbacks=callbacks,
-                verbose=True,
-                temperature=0,
-            )
-        elif self.llm is None:
-            self.init(stream_handler)
+        if self.llm is None:
+            self.init()
 
         qa = ConversationalRetrievalChain.from_llm(
             self.llm,
@@ -172,3 +159,15 @@ class LLMLoader:
         )
 
         return qa
+
+    def call(self, inputs, streaming_handler, tracing: bool = False):
+        print(inputs)
+
+        qa = self.get_chain(tracing)
+
+        result = qa(
+            inputs,
+            callbacks=[streaming_handler],
+        )
+
+        return result

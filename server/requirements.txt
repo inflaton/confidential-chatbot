@@ -12,17 +12,19 @@ chromadb
 sentence_transformers 
 InstructorEmbedding
 python-dotenv
-touch
+openai
+gpt4all
 pyllama 
 llama-cpp-python
 pyllamacpp
-gpt4all
 pygpt4all
 tiktoken
 accelerate
 safetensors
-torch
-# xformers
+xformers
 bitsandbytes
+torch
 einops
 pypdf
+gevent
+langchain-serve
