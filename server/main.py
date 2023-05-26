@@ -37,6 +37,7 @@ if device.type == "cuda":
 load_dotenv(override=True)
 
 device_type = os.environ.get("HF_EMBEDDINGS_DEVICE_TYPE") or device.type
+n_threds = int(os.environ.get("NUMBER_OF_CUP_CORES") or "4")
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
 streaming_enabled = llm_model_type in ["openai", "llamacpp"]
@@ -64,7 +65,7 @@ print(f"Completed in {end - start:.3f}s")
 
 start = timer()
 qa_chain = QAChain(vectorstore, llm_model_type)
-qa_chain.init()
+qa_chain.init(n_threds=n_threds)
 end = timer()
 print(f"Completed in {end - start:.3f}s")
 
