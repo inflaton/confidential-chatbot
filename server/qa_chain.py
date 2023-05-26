@@ -11,8 +11,13 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms import GPT4All, HuggingFacePipeline, LlamaCpp
 from langchain.vectorstores import VectorStore
 from langchain.vectorstores.base import VectorStore
-from transformers import (AutoModelForCausalLM, AutoTokenizer,
-                          StoppingCriteria, StoppingCriteriaList, pipeline)
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    StoppingCriteria,
+    StoppingCriteriaList,
+    pipeline,
+)
 
 
 class QAChain:
@@ -25,7 +30,9 @@ class QAChain:
         self.llm_model_type = llm_model_type
         self.llm = None
 
-    def init(self, custom_handler: Optional[BaseCallbackHandler] = None):
+    def init(
+        self, custom_handler: Optional[BaseCallbackHandler] = None, n_threds: int = 4
+    ):
         print("initializing LLM: " + self.llm_model_type)
         callbacks = [StreamingStdOutCallbackHandler()]
         if custom_handler is not None:
@@ -49,6 +56,7 @@ class QAChain:
                 self.llm = GPT4All(
                     model=MODEL_PATH,
                     n_ctx=2048,
+                    n_threads=n_threds,
                     backend="gptj" if self.llm_model_type == "gpt4all-j" else "llama",
                     callbacks=callbacks,
                     verbose=True,
@@ -58,6 +66,7 @@ class QAChain:
                 self.llm = LlamaCpp(
                     model_path=MODEL_PATH,
                     n_ctx=2048,
+                    n_threads=n_threds,
                     callbacks=callbacks,
                     verbose=True,
                     use_mlock=True,
