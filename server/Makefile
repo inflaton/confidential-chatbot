@@ -12,7 +12,7 @@ ingest:
 	python ingest.py
 
 mlock:
-	@echo "To set mlock, please run: sudo prlimit --memlock=15413752832:15413752832 --pid $$$$"
+	@echo 'To set new value for mlock, please run: sudo prlimit --memlock=15413752832:15413752832 --pid $$$$'
 	prlimit --memlock
 
 .PHONY: format
