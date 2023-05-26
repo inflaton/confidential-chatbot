@@ -21,5 +21,6 @@ format:
 	isort .
 
 install:
-	pip install -r requirements.txt
+	pip install -U -r requirements.txt
+	pip show langchain llama-cpp-python
 	

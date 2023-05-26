@@ -34,6 +34,7 @@ class QAChain:
         self, custom_handler: Optional[BaseCallbackHandler] = None, n_threds: int = 4
     ):
         print("initializing LLM: " + self.llm_model_type)
+        print(f"       n_threds: {n_threds}")
         callbacks = [StreamingStdOutCallbackHandler()]
         if custom_handler is not None:
             callbacks.append(custom_handler)
