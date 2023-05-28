@@ -34,6 +34,9 @@ if device.type == "cuda":
 load_dotenv(override=True)
 
 device_type = os.environ.get("HF_EMBEDDINGS_DEVICE_TYPE") or device.type
+hf_embeddings_model_name = (
+    os.environ.get("HF_EMBEDDINGS_MODEL_NAME") or "hkunlp/instructor-xl"
+)
 n_threds = int(os.environ.get("NUMBER_OF_CPU_CORES") or "4")
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
@@ -89,7 +92,7 @@ class MyCustomHandler(BaseCallbackHandler):
 
 start = timer()
 embeddings = HuggingFaceInstructEmbeddings(
-    model_name="hkunlp/instructor-xl", model_kwargs={"device": device_type}
+    model_name=hf_embeddings_model_name, model_kwargs={"device": device_type}
 )
 end = timer()
 
