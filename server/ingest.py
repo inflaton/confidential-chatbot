@@ -75,7 +75,7 @@ chunk_overlap = os.environ.get("CHUNK_OVERLAP")
 
 start = timer()
 embeddings = HuggingFaceInstructEmbeddings(
-    model_name="hf_embeddings_model_name", model_kwargs={"device": device_type}
+    model_name=hf_embeddings_model_name, model_kwargs={"device": device_type}
 )
 end = timer()
 
