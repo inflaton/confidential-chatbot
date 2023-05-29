@@ -125,10 +125,13 @@ print("Welcome to the PCI DSS v4 Chatbot! Type 'exit' to stop.")
 queue = [
     "What's PCI DSS?",
     "Can you summarize the changes made from PCI DSS version 3.2.1 to version 4.0?",
-    "tell me more on data loss prevention",
-    "more on protecting cardholder data with strong cryptography during transmission over open, public networks",
+    "tell me more on new requirements for vulnerability assessments and penetration testing",
+    "more on penetration testing",
     "exit",
 ]
+
+chat_start = timer()
+
 while True:
     if chatting:
         query = input("Please enter your question: ")
@@ -164,3 +167,6 @@ while True:
         print(f"Completed in {end - start:.3f}s")
 
     chat_history.append((query, result["answer"]))
+
+chat_end = timer()
+print(f"Total time used: {chat_end - chat_start:.3f}s")

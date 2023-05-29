@@ -62,8 +62,11 @@ class QAChain:
                 MODEL_PATH = os.environ.get("LLAMACPP_MODEL_PATH")
                 self.llm = LlamaCpp(
                     model_path=MODEL_PATH,
-                    n_ctx=2048,
+                    n_ctx=4096,
                     n_threads=n_threds,
+                    seed=0,
+                    temperature=0,
+                    max_tokens=2048,
                     callbacks=callbacks,
                     verbose=True,
                     use_mlock=True,
