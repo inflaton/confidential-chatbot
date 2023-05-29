@@ -63,6 +63,10 @@ def generate_index(chunks: List, embeddings: HuggingFaceInstructEmbeddings) -> C
 # Constants
 load_dotenv(override=True)
 
+device_type = os.environ.get("HF_EMBEDDINGS_DEVICE_TYPE") or device.type
+hf_embeddings_model_name = (
+    os.environ.get("HF_EMBEDDINGS_MODEL_NAME") or "hkunlp/instructor-xl"
+)
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 source_pdfs_path = os.environ.get("SOURCE_PDFS_PATH")
 source_urls = os.environ.get("SOURCE_URLS")
@@ -71,7 +75,7 @@ chunk_overlap = os.environ.get("CHUNK_OVERLAP")
 
 start = timer()
 embeddings = HuggingFaceInstructEmbeddings(
-    model_name="hkunlp/instructor-xl", model_kwargs={"device": device.type}
+    model_name="hf_embeddings_model_name", model_kwargs={"device": device_type}
 )
 end = timer()
 
