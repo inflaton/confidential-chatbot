@@ -11,13 +11,8 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms import GPT4All, HuggingFacePipeline, LlamaCpp
 from langchain.vectorstores import VectorStore
 from langchain.vectorstores.base import VectorStore
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    StoppingCriteria,
-    StoppingCriteriaList,
-    pipeline,
-)
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          StoppingCriteria, StoppingCriteriaList, pipeline)
 
 
 class QAChain:
@@ -149,6 +144,19 @@ class QAChain:
                     top_k=0,  # select from top 0 tokens (because zero, relies on top_p)
                     max_new_tokens=2048,  # mex number of tokens to generate in the output
                     repetition_penalty=1.1,  # without this output begins repeating
+                )
+                self.llm = HuggingFacePipeline(pipeline=pipe)
+            else:
+                MODEL_ID = os.environ.get("OTHER_MODEL_ID")
+                tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+                pipe = pipeline(
+                    "text-generation",
+                    model=MODEL_ID,
+                    tokenizer=tokenizer,
+                    torch_dtype=torch.bfloat16,
+                    trust_remote_code=True,
+                    device_map="auto",
+                    max_new_tokens=2048,
                 )
                 self.llm = HuggingFacePipeline(pipeline=pipe)
 
