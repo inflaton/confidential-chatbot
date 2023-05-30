@@ -43,7 +43,10 @@ hf_embeddings_model_name = (
 n_threds = int(os.environ.get("NUMBER_OF_CPU_CORES") or "4")
 index_path = os.environ.get("CHROMADB_INDEX_PATH")
 llm_model_type = os.environ.get("LLM_MODEL_TYPE")
-streaming_enabled = llm_model_type in ["openai", "llamacpp"]
+streaming_enabled = llm_model_type in [
+    "openai",
+    "llamacpp",
+] or llm_model_type.startswith("gpt4all")
 
 start = timer()
 embeddings = HuggingFaceInstructEmbeddings(

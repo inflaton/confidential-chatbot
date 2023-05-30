@@ -51,11 +51,15 @@ class QAChain:
                 )
                 self.llm = GPT4All(
                     model=MODEL_PATH,
-                    n_ctx=2048,
+                    n_ctx=4096,
                     n_threads=n_threds,
+                    seed=0,
+                    temp=0.1,
+                    n_predict=2048,
                     backend="gptj" if self.llm_model_type == "gpt4all-j" else "llama",
                     callbacks=callbacks,
                     verbose=True,
+                    streaming=True,
                     use_mlock=True,
                 )
             elif self.llm_model_type == "llamacpp":
