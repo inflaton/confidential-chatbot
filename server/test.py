@@ -33,6 +33,9 @@ if device.type == "cuda":
 # Constants
 load_dotenv(override=True)
 
+# https://github.com/huggingface/transformers/issues/17611
+os.environ["CURL_CA_BUNDLE"] = ""
+
 device_type = os.environ.get("HF_EMBEDDINGS_DEVICE_TYPE") or device.type
 hf_embeddings_model_name = (
     os.environ.get("HF_EMBEDDINGS_MODEL_NAME") or "hkunlp/instructor-xl"
