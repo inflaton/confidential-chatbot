@@ -72,6 +72,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  if (req.method === "OPTIONS") {
+    return res.send("ok");
+  }
+
   console.log('req.body: ', req.body);
   const { question, history } = req.body;
 
