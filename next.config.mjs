@@ -1,21 +1,19 @@
-/** @type {import('next').NextConfig} */
+const getCorsHeaders = () => {
+  const headers = {};
+
+  headers["Access-Control-Allow-Origin"] = "http://localhost:1420";
+  headers["Access-Control-Allow-Credentials"] = "true";
+  headers["Access-Control-Allow-Methods"] =
+    "GET,OPTIONS,PATCH,DELETE,POST,PUT";
+  headers["Access-Control-Allow-Headers"] =
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization";
+
+  return Object.entries(headers).map(([key, value]) => ({ key, value }));
+};
+
 const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
-  async headers() {
-    return [
-      {
-        // matching all API routes
-        source: "/api/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Origin", value: "*" }, // replace this your actual origin
-          { key: "Access-Control-Allow-Methods", value: "GET,DELETE,PATCH,POST,PUT" },
-          { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
-        ]
-      }
-    ]
-  },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
@@ -31,6 +29,14 @@ const nextConfig = {
   webpack(config) {
     config.experiments = { ...config.experiments, topLevelAwait: true };
     return config;
+  },
+  headers: async () => {
+    return [
+      {
+        source: "/api/(.*)",
+        headers: getCorsHeaders(),
+      },
+    ];
   },
 };
 
