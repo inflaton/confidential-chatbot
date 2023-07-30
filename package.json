@@ -4,7 +4,6 @@
   "private": true,
   "license": "UNLICENSED",
   "author": "Donghao Huang",
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
