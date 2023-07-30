@@ -1,14 +1,12 @@
 const getCorsHeaders = () => {
-  const headers = {};
+  const headers = [
+    { key: "Access-Control-Allow-Credentials", value: "true" },
+    { key: "Access-Control-Allow-Origin", value: "*" },
+    { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+    { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
+  ];
 
-  headers["Access-Control-Allow-Origin"] = "https://confidential-chatbot.glitch.me";
-  headers["Access-Control-Allow-Credentials"] = "true";
-  headers["Access-Control-Allow-Methods"] =
-    "GET,OPTIONS,PATCH,DELETE,POST,PUT";
-  headers["Access-Control-Allow-Headers"] =
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization";
-
-  return Object.entries(headers).map(([key, value]) => ({ key, value }));
+  return headers;
 };
 
 const nextConfig = {
@@ -33,7 +31,7 @@ const nextConfig = {
   headers: async () => {
     return [
       {
-        source: "/api/(.*)",
+        source: "/api/:path*",
         headers: getCorsHeaders(),
       },
     ];
